@@ -1,0 +1,8 @@
+{
+  "name": "Baja Psycho - Premium Tacoma Off-Road Accessories",
+  "description": "A high-octane, rugged landing page for a premium Toyota Tacoma off-road accessory brand. Featuring a cinematic waitlist experience and desert-racing aesthetic.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
