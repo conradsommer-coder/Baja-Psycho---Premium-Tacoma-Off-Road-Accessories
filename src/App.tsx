@@ -11,36 +11,279 @@ import {
   Facebook,
   ShieldCheck,
   Wrench,
-  Dna
+  Dna,
+  Globe,
+  X
 } from 'lucide-react';
 import { cn } from './lib/utils';
 
+type Language = 'es' | 'en';
+
+const content = {
+  es: {
+    nav: { origins: 'Orígenes', engineering: 'Equipamiento', waitlist: 'Pedidos', notify: 'Notificarme' },
+    hero: { est: 'Est. 2026 • Los Cabos, BCS', desc: 'Si tu Taco nunca ha visto tierra, esto no es para ti. Curaduría de accesorios para Toyota Tacoma. Built for Baja.', button: 'Acceso Anticipado', scroll: 'Deslizar' },
+    stats: {
+      s1: { label: 'Built for Baja.', value: 'El Origen', desc: 'Nacidos donde el desierto topa con el mar. Si aguanta aquí, aguanta donde sea.' },
+      s2: { label: 'Filtro de Calidad', value: 'Curaduría', desc: 'No vendemos volumen. Ni accesorios genéricos. Si está en el catálogo, es porque La Taco lo exige.' },
+      s3: { label: 'Especialistas', value: 'Solo Tacoma', desc: 'Ni una camioneta más. Conocemos esta plataforma hasta el último tornillo.' }
+    },
+    about: {
+      subtitle: 'Built for Baja.',
+      title: <>El Carro<br />Sueño.</>,
+      p1: 'Baja Psycho nació en Los Cabos, donde los hoyos de la calle te cobran caro si no traes la camioneta correcta, y donde el desierto y las playas te esperan a diez minutos de la ciudad. La Tacoma no fue una compra. Fue el carro sueño. El que se trabaja y se ahorra para tener.',
+      p2: 'Y cuando llegó, llegó también la pregunta: ¿dónde consigues en México los accesorios que merece? Baja Psycho existe para responder esa pregunta. Un buen leveling kit, un bed rack sólido. Solo Tacoma. Solo calidad.',
+      quote: '"La Baja no perdona las llantas baratas. Ni el equipo a medias."'
+    },
+    gallery: {
+      g1: { label: 'Bed Racks & Overlanding', title: 'Lista para la ruta' },
+      g2: { label: 'Lift Kits & Suspensión', title: 'El terreno no importa' }
+    },
+    popup: {
+      title: 'Acceso Anticipado.',
+      desc: 'Deja tus datos. Te avisamos cuando haya nuevo equipo disponible o estemos listos para enviar. Sin spam.',
+      firstName: 'Nombre',
+      lastName: 'Apellido',
+      whatsapp: 'WhatsApp',
+      email: 'Correo (Obligatorio)',
+      button: 'Avisenme',
+      processing: 'Procesando...',
+      success: 'Anotado. Estamos en contacto.'
+    },
+    contact: {
+      badge: 'Bajo Pedido',
+      title: 'Pedido Especial',
+      desc: '¿Buscas algo en específico para la Taco? Deja tus datos y los detalles de tu pieza. No vendemos genéricos, revisaremos tu caso.',
+      firstName: 'Nombre',
+      lastName: 'Apellido',
+      email: 'Correo Electrónico *',
+      message: '¿Qué pieza buscas?',
+      button: 'Solicitar',
+      processing: 'Enviando...',
+      successTitle: 'Recibido',
+      successDesc: 'Revisamos tu caso y nos ponemos en contacto.'
+    },
+    footer: {
+      desc: 'Curaduría de accesorios exclusivos para Toyota Tacoma. Nacidos en Los Cabos. Construidos para la Baja.',
+      locTitle: 'Ubicación',
+      loc1: 'Los Cabos, Baja California Sur, MX',
+      loc2: 'Envíos a todo México.',
+      legalTitle: 'Legal',
+      l1: 'Privacidad',
+      l2: 'Términos',
+      l3: 'Envíos',
+      copy: '© 2026 Baja Psycho. No relacionado con Toyota Motor Corp.'
+    }
+  },
+  en: {
+    nav: { origins: 'Origins', engineering: 'Hardware', waitlist: 'Requests', notify: 'Notify Me' },
+    hero: { est: 'Est. 2026 • Los Cabos, BCS', desc: 'If your Taco has never seen dirt, this isn\'t for you. Curated Toyota Tacoma accessories. Built for Baja.', button: 'Early Access', scroll: 'Scroll' },
+    stats: {
+      s1: { label: 'Built for Baja.', value: 'The Origin', desc: 'Born where the desert meets the sea. If it survives here, it survives anywhere.' },
+      s2: { label: 'Quality Filter', value: 'Curated', desc: 'We don\'t sell volume. No generic accessories. If it\'s in the catalog, it\'s because it works.' },
+      s3: { label: 'Specialists', value: 'Only Tacoma', desc: 'Not one other truck. We know this platform down to the last bolt.' }
+    },
+    about: {
+      subtitle: 'Built for Baja.',
+      title: <>The Dream<br />Truck.</>,
+      p1: 'Baja Psycho was born in Los Cabos, where potholes punish the wrong truck, and where desert and beaches wait ten minutes from the city. The Tacoma wasn\'t a purchase. It was the dream truck. The one you work hard and save for.',
+      p2: 'And when it arrived, so did the question: where do you find in Mexico the accessories it deserves? Baja Psycho exists to answer that question. A solid leveling kit, a proper bed rack. Only Tacoma. Only quality.',
+      quote: '"Baja has no mercy for cheap tires. Or half-baked gear."'
+    },
+    gallery: {
+      g1: { label: 'Bed Racks & Overlanding', title: 'Ready for the dirt' },
+      g2: { label: 'Lift Kits & Suspension', title: 'Terrain doesn\'t matter' }
+    },
+    popup: {
+      title: 'Early Access.',
+      desc: 'Drop your info. We\'ll notify you when new gear drops. No spam.',
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      whatsapp: 'WhatsApp',
+      email: 'Email (Required)',
+      button: 'Notify Me',
+      processing: 'Processing...',
+      success: 'Noted. Talk soon.'
+    },
+    contact: {
+      badge: 'By Request',
+      title: 'Special Request',
+      desc: 'Looking for a specific part for your Taco? Leave your details and the part you need. We don\'t do generic, we\'ll review your case.',
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      email: 'Email *',
+      message: 'What part are you looking for?',
+      button: 'Request',
+      processing: 'Sending...',
+      successTitle: 'Received',
+      successDesc: 'We\'ll review and get back to you.'
+    },
+    footer: {
+      desc: 'Curated, exclusive accessories for Toyota Tacoma. Born in Los Cabos. Built for Baja.',
+      locTitle: 'Location',
+      loc1: 'Los Cabos, Baja California Sur, MX',
+      loc2: 'Shipping across Mexico.',
+      legalTitle: 'Legal',
+      l1: 'Privacy Policy',
+      l2: 'Terms of Service',
+      l3: 'Shipping',
+      copy: '© 2026 Baja Psycho. Not affiliated with Toyota Motor Corp.'
+    }
+  }
+};
+
 export default function App() {
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [lang, setLang] = useState<Language>('es');
+
+  // Contact form state
+  const [contactData, setContactData] = useState({ firstName: '', lastName: '', email: '', message: '' });
+  const [isContactSubmitting, setIsContactSubmitting] = useState(false);
+  const [isContactSubmitted, setIsContactSubmitted] = useState(false);
+
+  // Popup state
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupData, setPopupData] = useState({ firstName: '', lastName: '', whatsapp: '', email: '' });
+  const [isPopupSubmitting, setIsPopupSubmitting] = useState(false);
+  const [isPopupSubmitted, setIsPopupSubmitted] = useState(false);
+
+  const t = content[lang];
 
   useEffect(() => {
     const handleScroll = () => setHasScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
+
+    // Popup logic
+    const hasVisited = localStorage.getItem('bajaPsychoVisited');
+    if (!hasVisited) {
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+        localStorage.setItem('bajaPsychoVisited', 'true');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!contactData.email) return;
     
-    setIsSubmitting(true);
-    // Simulate API call for now (until Firebase is ready)
+    setIsContactSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsSubmitted(true);
-    setIsSubmitting(false);
-    setEmail('');
+    setIsContactSubmitted(true);
+    setIsContactSubmitting(false);
+    setContactData({ firstName: '', lastName: '', email: '', message: '' });
   };
+
+  const handlePopupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!popupData.email) return;
+    
+    setIsPopupSubmitting(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setIsPopupSubmitted(true);
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 2500);
+  };
+
+  const toggleLang = () => setLang(prev => prev === 'en' ? 'es' : 'en');
 
   return (
     <div className="min-h-screen bg-black font-sans selection:bg-baja-cream selection:text-black distressed-texture overflow-x-hidden">
+      
+      {/* 5 Second Popup Modal */}
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setShowPopup(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-[#050505] border border-white/10 w-full max-w-lg relative overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                type="button"
+                onClick={() => setShowPopup(false)}
+                className="absolute top-4 right-4 z-50 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              
+              <div className="p-8 md:p-12 relative z-10">
+                <ShieldCheck className="w-10 h-10 text-baja-sand mb-6" />
+                <h3 className="font-display text-4xl uppercase mb-3 text-baja-cream">{t.popup.title}</h3>
+                <p className="text-sm opacity-60 mb-8 font-sans leading-relaxed">
+                  {t.popup.desc}
+                </p>
+
+                {!isPopupSubmitted ? (
+                  <form onSubmit={handlePopupSubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <input 
+                        type="text" 
+                        placeholder={t.popup.firstName}
+                        className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white"
+                        value={popupData.firstName}
+                        onChange={(e) => setPopupData({...popupData, firstName: e.target.value})}
+                      />
+                      <input 
+                        type="text" 
+                        placeholder={t.popup.lastName}
+                        className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white"
+                        value={popupData.lastName}
+                        onChange={(e) => setPopupData({...popupData, lastName: e.target.value})}
+                      />
+                    </div>
+                    <input 
+                      type="tel" 
+                      placeholder={t.popup.whatsapp}
+                      className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white"
+                      value={popupData.whatsapp}
+                      onChange={(e) => setPopupData({...popupData, whatsapp: e.target.value})}
+                    />
+                    <input 
+                      type="email" 
+                      required
+                      placeholder={t.popup.email}
+                      className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white"
+                      value={popupData.email}
+                      onChange={(e) => setPopupData({...popupData, email: e.target.value})}
+                    />
+                    
+                    <button 
+                      type="submit" 
+                      disabled={isPopupSubmitting}
+                      className="w-full bg-baja-cream text-black px-8 py-4 font-display text-xl uppercase tracking-wider hover:bg-white disabled:opacity-50 transition-all mt-4 flex justify-center"
+                    >
+                      {isPopupSubmitting ? t.popup.processing : t.popup.button}
+                    </button>
+                  </form>
+                ) : (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="py-8 text-center border border-dashed border-baja-sand/30"
+                  >
+                    <Trophy className="w-8 h-8 text-baja-sand mx-auto mb-4" />
+                    <h4 className="font-display text-2xl uppercase text-baja-cream">{t.popup.success}</h4>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Navigation */}
       <nav className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b",
@@ -59,17 +302,27 @@ export default function App() {
           </div>
           
           <div className="hidden md:flex gap-8 uppercase font-mono text-[10px] tracking-[0.2em] opacity-60">
-            <a href="#about" className="hover:text-baja-cream transition-colors">Origins</a>
-            <a href="#performance" className="hover:text-baja-cream transition-colors">Engineering</a>
-            <a href="#waitlist" className="hover:text-baja-cream transition-colors">Join Waitlist</a>
+            <a href="#about" className="hover:text-baja-cream transition-colors">{t.nav.origins}</a>
+            <a href="#performance" className="hover:text-baja-cream transition-colors">{t.nav.engineering}</a>
+            <a href="#waitlist" className="hover:text-baja-cream transition-colors">{t.nav.waitlist}</a>
           </div>
 
-          <a 
-            href="#waitlist"
-            className="px-4 py-2 bg-baja-cream text-black font-mono text-[10px] tracking-widest uppercase hover:bg-white transition-all duration-300"
-          >
-            Notify Me
-          </a>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={toggleLang}
+              className="flex items-center gap-2 text-white/60 hover:text-white transition-colors font-mono text-[10px] uppercase tracking-widest"
+              title="Toggle Language"
+            >
+              <Globe className="w-4 h-4" />
+              <span>{lang.toUpperCase()}</span>
+            </button>
+            <a 
+              href="#waitlist"
+              className="px-4 py-2 bg-baja-cream text-black font-mono text-[10px] tracking-widest uppercase hover:bg-white transition-all duration-300 hidden md:block"
+            >
+              {t.nav.notify}
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -83,9 +336,9 @@ export default function App() {
           className="absolute inset-0 z-0"
         >
           <img 
-            src="https://res.cloudinary.com/dr78wne7t/image/upload/v1778956452/ChatGPT_Image_May_16_2026_11_33_30_AM_1_ipzxqi.png" 
+            src="https://res.cloudinary.com/dr78wne7t/image/upload/v1779953788/ChatGPT_Image_May_28_2026_12_35_53_AM_fcrf36.png" 
             alt="Toyota Tacoma Racing"
-            className="w-full h-full object-cover grayscale brightness-75"
+            className="w-full h-full object-cover brightness-75"
             referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
@@ -111,7 +364,7 @@ export default function App() {
 
             <div className="flex items-center gap-4 mb-4">
               <div className="h-px w-6 md:w-8 bg-baja-sand" />
-              <span className="font-mono text-[9px] md:text-[10px] tracking-[0.4em] uppercase text-baja-cream opacity-80">Est. 2026 • Baja Mexico</span>
+              <span className="font-mono text-[9px] md:text-[10px] tracking-[0.4em] uppercase text-baja-cream opacity-80">{t.hero.est}</span>
               <div className="h-px w-6 md:w-8 bg-baja-sand" />
             </div>
             
@@ -121,7 +374,7 @@ export default function App() {
             </h1>
             
             <p className="max-w-sm md:max-w-md mx-auto text-sm md:text-lg opacity-60 font-sans tracking-tight mb-10 leading-relaxed">
-              High-performance off-road accessories engineered for the ultimate Toyota Tacoma builds. Desert tested. Psycho approved.
+              {t.hero.desc}
             </p>
 
             <motion.div
@@ -133,7 +386,7 @@ export default function App() {
                 className="group relative flex items-center gap-4 bg-baja-cream px-10 py-6 text-black overflow-hidden shadow-[0_0_40px_rgba(235,230,217,0.15)]"
               >
                 <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                <span className="relative z-10 font-display text-xl md:text-2xl uppercase tracking-wider">Access the Fleet</span>
+                <span className="relative z-10 font-display text-xl md:text-2xl uppercase tracking-wider">{t.hero.button}</span>
                 <ChevronRight className="relative z-10 w-6 h-6 group-hover:translate-x-1 transition-all" />
               </a>
             </motion.div>
@@ -146,7 +399,7 @@ export default function App() {
           transition={{ duration: 2, repeat: Infinity }}
           className="absolute bottom-12 flex flex-col items-center gap-2 opacity-30"
         >
-          <span className="font-mono text-[8px] uppercase tracking-widest">Scroll</span>
+          <span className="font-mono text-[8px] uppercase tracking-widest">{t.hero.scroll}</span>
           <div className="w-px h-12 bg-white" />
         </motion.div>
       </section>
@@ -156,9 +409,9 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-white/5 md:border-x">
             {[
-              { icon: ShieldCheck, label: "Bulletproof", value: "Built to Outlast", desc: "Military grade alloys and finishes for extreme durability." },
-              { icon: Wrench, label: "Precision", value: "Zero Tolerance", desc: "CNC machined components for flawless Tacoma integration." },
-              { icon: Dna, label: "Evolution", value: "Desert Bred", desc: "Iterated through thousands of miles of Baja brutal testing." },
+              { icon: ShieldCheck, label: t.stats.s1.label, value: t.stats.s1.value, desc: t.stats.s1.desc },
+              { icon: Wrench, label: t.stats.s2.label, value: t.stats.s2.value, desc: t.stats.s2.desc },
+              { icon: Dna, label: t.stats.s3.label, value: t.stats.s3.value, desc: t.stats.s3.desc },
             ].map((stat, idx) => (
               <motion.div 
                 key={idx}
@@ -195,17 +448,16 @@ export default function App() {
                 alt="Badge" 
                 className="w-24 mb-6 opacity-80"
               />
-              <div className="font-brush text-baja-sand text-2xl md:text-3xl mb-4 -rotate-2">The New Standard</div>
+              <div className="font-brush text-baja-sand text-2xl md:text-3xl mb-4 -rotate-2">{t.about.subtitle}</div>
               <h2 className="font-display text-7xl md:text-9xl uppercase leading-[0.85] tracking-tighter mb-8 text-baja-cream">
-                Without<br />
-                Limits.
+                {t.about.title}
               </h2>
               <div className="space-y-6 text-base md:text-lg opacity-60 leading-relaxed max-w-lg">
                 <p>
-                  Most brands build for looks. We build for the Psycho. The ones who see a trail and think "faster". The ones who push their Tacoma until it breaks, then ask for more.
+                  {t.about.p1}
                 </p>
                 <p>
-                  Our upcoming catalog includes long-travel suspension kits, race-spec bumpers, and interior recovery systems that don't just look the part—they survive the Baja.
+                  {t.about.p2}
                 </p>
               </div>
             </motion.div>
@@ -218,9 +470,9 @@ export default function App() {
             >
               <div className="absolute inset-0 border border-baja-sand/20 -m-4 md:-m-12 pointer-events-none" />
               <img 
-                src="https://res.cloudinary.com/dr78wne7t/image/upload/v1778956443/ChatGPT_Image_May_16_2026_11_33_31_AM_4_yjtx1n.png"
+                src="https://res.cloudinary.com/dr78wne7t/image/upload/v1779953308/ChatGPT_Image_May_28_2026_12_27_35_AM_2_rfdypr.png"
                 alt="Off Road Detail"
-                className="w-full h-full object-cover grayscale brightness-90 shadow-2xl"
+                className="w-full h-full object-cover brightness-90 shadow-2xl"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute top-0 right-0 p-6 md:p-10 pointer-events-none">
@@ -233,7 +485,7 @@ export default function App() {
               <div className="absolute -bottom-8 -left-8 md:-bottom-12 md:-left-12 bg-baja-cream text-black p-6 md:p-10 max-w-[240px] md:max-w-[280px] shadow-2xl">
                 <Trophy className="w-8 h-8 mb-4 text-baja-sand" />
                 <p className="font-mono text-[10px] md:text-[11px] uppercase leading-relaxed tracking-wider">
-                  "Designed by racers, built for the adventure of a lifetime."
+                  {t.about.quote}
                 </p>
               </div>
             </motion.div>
@@ -257,8 +509,8 @@ export default function App() {
                 className="w-full aspect-[16/10] object-cover grayscale group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-12 flex flex-col justify-end">
-                <span className="font-mono text-[10px] tracking-widest uppercase text-baja-sand mb-2">Stage 3 Kit</span>
-                <h4 className="font-display text-4xl uppercase">The Loadout</h4>
+                <span className="font-mono text-[10px] tracking-widest uppercase text-baja-sand mb-2">{t.gallery.g1.label}</span>
+                <h4 className="font-display text-4xl uppercase">{t.gallery.g1.title}</h4>
               </div>
             </motion.div>
 
@@ -275,62 +527,93 @@ export default function App() {
                 className="w-full aspect-[16/10] object-cover grayscale group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-12 flex flex-col justify-end">
-                <span className="font-mono text-[10px] tracking-widest uppercase text-baja-sand mb-2">Race Series</span>
-                <h4 className="font-display text-4xl uppercase">Brutal Precision</h4>
+                <span className="font-mono text-[10px] tracking-widest uppercase text-baja-sand mb-2">{t.gallery.g2.label}</span>
+                <h4 className="font-display text-4xl uppercase">{t.gallery.g2.title}</h4>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Waitlist Section */}
-      <section id="waitlist" className="py-24 md:py-32 bg-baja-cream text-black distressed-texture">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+      {/* Contact / Special Request Section */}
+      <section id="waitlist" className="py-24 md:py-32 bg-baja-cream text-black distressed-texture relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-5">
+          <Wrench className="w-96 h-96 -rotate-45 translate-x-1/3 -translate-y-1/3" />
+        </div>
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <img 
-              src="https://res.cloudinary.com/dr78wne7t/image/upload/v1778955564/4_lszo2n.png" 
-              alt="Monogram"
-              className="w-28 md:w-32 mx-auto mb-10 brightness-0"
-            />
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-black text-white font-mono text-[8px] uppercase tracking-[0.3em] mb-8">
-              <Zap className="w-2 h-2 fill-baja-sand text-baja-sand" /> Limited Release
+              <Zap className="w-2 h-2 fill-baja-sand text-baja-sand" /> {t.contact.badge}
             </div>
-            <h2 className="font-display text-7xl md:text-[11rem] uppercase leading-none mb-8 tracking-tighter">Join The Clan</h2>
-            <p className="text-lg md:text-xl opacity-70 mb-14 max-w-xl mx-auto font-sans leading-relaxed">
-              Be the first to access the 2026 Summer Drop. Limited production runs. Precision engineered. No restocks.
+            <h2 className="font-display text-5xl md:text-7xl lg:text-[8rem] uppercase leading-none mb-8 tracking-tighter">{t.contact.title}</h2>
+            <p className="text-base md:text-xl opacity-80 mb-14 max-w-2xl mx-auto font-sans leading-relaxed">
+              {t.contact.desc}
             </p>
 
             <AnimatePresence mode="wait">
-              {!isSubmitted ? (
+              {!isContactSubmitted ? (
                 <motion.form 
                   key="form"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  onSubmit={handleSubmit}
-                  className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto"
+                  onSubmit={handleContactSubmit}
+                  className="bg-black/5 p-8 md:p-12 text-left"
                 >
-                  <div className="relative flex-1 group">
-                    <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 opacity-30 group-focus-within:opacity-100 group-focus-within:text-baja-sand transition-all" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                      <label className="block font-mono text-[10px] uppercase tracking-[0.2em] mb-2 opacity-50">{t.contact.firstName}</label>
+                      <input 
+                        type="text" 
+                        required
+                        className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-mono text-sm uppercase tracking-widest focus:outline-none transition-all text-black"
+                        value={contactData.firstName}
+                        onChange={(e) => setContactData({...contactData, firstName: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-mono text-[10px] uppercase tracking-[0.2em] mb-2 opacity-50">{t.contact.lastName}</label>
+                      <input 
+                        type="text" 
+                        className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-mono text-sm uppercase tracking-widest focus:outline-none transition-all text-black"
+                        value={contactData.lastName}
+                        onChange={(e) => setContactData({...contactData, lastName: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="mb-8">
+                    <label className="block font-mono text-[10px] uppercase tracking-[0.2em] mb-2 opacity-50">{t.contact.email}</label>
                     <input 
                       type="email" 
                       required
-                      placeholder="ENTER YOUR EMAIL"
-                      className="w-full bg-black/5 border-b-2 border-black/20 focus:border-black px-16 py-6 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-black/30"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-mono text-sm uppercase tracking-widest focus:outline-none transition-all text-black"
+                      value={contactData.email}
+                      onChange={(e) => setContactData({...contactData, email: e.target.value})}
                     />
                   </div>
+
+                  <div className="mb-12">
+                    <label className="block font-mono text-[10px] uppercase tracking-[0.2em] mb-2 opacity-50">{t.contact.message}</label>
+                    <textarea 
+                      required
+                      rows={3}
+                      className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-sans text-base focus:outline-none transition-all text-black resize-none"
+                      value={contactData.message}
+                      onChange={(e) => setContactData({...contactData, message: e.target.value})}
+                    />
+                  </div>
+
                   <button 
                     type="submit" 
-                    disabled={isSubmitting}
-                    className="bg-black text-white px-12 py-6 font-display text-2xl uppercase tracking-wider hover:bg-zinc-800 disabled:opacity-50 transition-all flex items-center justify-center gap-3 shrink-0"
+                    disabled={isContactSubmitting}
+                    className="w-full md:w-auto bg-black text-white px-12 py-5 font-display text-2xl uppercase tracking-wider hover:bg-zinc-800 disabled:opacity-50 transition-all flex items-center justify-center gap-3 shrink-0 mx-auto"
                   >
-                    {isSubmitting ? "Processing..." : "Secure Access"}
+                    {isContactSubmitting ? t.contact.processing : t.contact.button}
                   </button>
                 </motion.form>
               ) : (
@@ -338,11 +621,11 @@ export default function App() {
                   key="success"
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="p-12 border-4 border-black inline-block"
+                  className="p-12 bg-black/5 inline-block w-full max-w-xl"
                 >
-                  <ShieldCheck className="w-16 h-16 mx-auto mb-6 text-baja-sand" />
-                  <h3 className="font-display text-4xl uppercase mb-2">You're in the list</h3>
-                  <p className="font-mono text-[10px] uppercase tracking-widest opacity-50">Expect communication soon.</p>
+                  <ShieldCheck className="w-16 h-16 mx-auto mb-6 text-black" />
+                  <h3 className="font-display text-4xl uppercase mb-2">{t.contact.successTitle}</h3>
+                  <p className="font-mono text-[10px] uppercase tracking-widest opacity-60">{t.contact.successDesc}</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -359,7 +642,7 @@ export default function App() {
               <span className="font-display text-3xl tracking-tighter uppercase text-white">Baja Psycho</span>
             </div>
             <p className="max-w-xs mx-auto md:mx-0 opacity-40 text-sm mb-8 leading-relaxed">
-              Engineering performance accessories for the modern explorer. Rooted in Baja racing heritage, built for the future of Tacoma.
+              {t.footer.desc}
             </p>
             <div className="flex gap-4 justify-center md:justify-start">
               <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-baja-cream hover:text-black transition-all"><Instagram className="w-4 h-4" /></a>
@@ -369,29 +652,29 @@ export default function App() {
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-mono text-[10px] uppercase tracking-[0.2em] mb-6 opacity-30 text-white">Location</h4>
+            <h4 className="font-mono text-[10px] uppercase tracking-[0.2em] mb-6 opacity-30 text-white">{t.footer.locTitle}</h4>
             <div className="flex items-center gap-3 justify-center md:justify-start text-sm opacity-60">
               <MapPin className="w-4 h-4 text-baja-sand" />
-              <span>Ensenada, Baja California, MX</span>
+              <span>{t.footer.loc1}</span>
             </div>
             <div className="text-sm opacity-60">
-              Distribution: Phoenix, AZ | San Diego, CA
+              {t.footer.loc2}
             </div>
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-mono text-[10px] uppercase tracking-[0.2em] mb-6 opacity-30 text-white">Legal</h4>
+            <h4 className="font-mono text-[10px] uppercase tracking-[0.2em] mb-6 opacity-30 text-white">{t.footer.legalTitle}</h4>
             <div className="flex flex-col gap-3 text-sm opacity-60">
-              <a href="#" className="hover:text-baja-cream transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-baja-cream transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-baja-cream transition-colors">Shipping Info</a>
+              <a href="#" className="hover:text-baja-cream transition-colors">{t.footer.l1}</a>
+              <a href="#" className="hover:text-baja-cream transition-colors">{t.footer.l2}</a>
+              <a href="#" className="hover:text-baja-cream transition-colors">{t.footer.l3}</a>
             </div>
           </div>
         </div>
 
         <div className="mt-24 pt-12 border-t border-white/5 text-center">
           <p className="font-mono text-[8px] uppercase tracking-[0.5em] opacity-20">
-            © 2026 Baja Psycho Off-Road Accessories. Not affiliated with Toyota Motor Corp.
+            {t.footer.copy}
           </p>
         </div>
       </footer>
