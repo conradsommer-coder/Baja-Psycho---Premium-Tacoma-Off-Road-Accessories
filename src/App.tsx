@@ -140,12 +140,14 @@ export default function App() {
   const [contactData, setContactData] = useState({ firstName: '', lastName: '', email: '', message: '' });
   const [isContactSubmitting, setIsContactSubmitting] = useState(false);
   const [isContactSubmitted, setIsContactSubmitted] = useState(false);
+  const [contactError, setContactError] = useState<string | null>(null);
 
   // Popup state
   const [showPopup, setShowPopup] = useState(false);
   const [popupData, setPopupData] = useState({ firstName: '', lastName: '', whatsapp: '', email: '' });
   const [isPopupSubmitting, setIsPopupSubmitting] = useState(false);
   const [isPopupSubmitted, setIsPopupSubmitted] = useState(false);
+  const [popupError, setPopupError] = useState<string | null>(null);
 
   const t = content[lang];
 
@@ -169,24 +171,69 @@ export default function App() {
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactData.email) return;
-    
+
     setIsContactSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsContactSubmitted(true);
-    setIsContactSubmitting(false);
-    setContactData({ firstName: '', lastName: '', email: '', message: '' });
+    setContactError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('firstName', contactData.firstName);
+      formData.append('lastName', contactData.lastName);
+      formData.append('email', contactData.email);
+      formData.append('message', contactData.message);
+
+      const response = await fetch('https://formspree.io/f/mdavjvaw', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      setIsContactSubmitted(true);
+      setContactData({ firstName: '', lastName: '', email: '', message: '' });
+    } catch (error) {
+      setContactError(error instanceof Error ? error.message : 'Error sending message');
+    } finally {
+      setIsContactSubmitting(false);
+    }
   };
 
   const handlePopupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!popupData.email) return;
-    
+
     setIsPopupSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsPopupSubmitted(true);
-    setTimeout(() => {
-      setShowPopup(false);
-    }, 2500);
+    setPopupError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('firstName', popupData.firstName);
+      formData.append('lastName', popupData.lastName);
+      formData.append('whatsapp', popupData.whatsapp);
+      formData.append('email', popupData.email);
+
+      const response = await fetch('https://formspree.io/f/mdavjvaw', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      setIsPopupSubmitted(true);
+      setTimeout(() => {
+        setShowPopup(false);
+        setIsPopupSubmitted(false);
+        setPopupData({ firstName: '', lastName: '', whatsapp: '', email: '' });
+      }, 2500);
+    } catch (error) {
+      setPopupError(error instanceof Error ? error.message : 'Error sending message');
+    } finally {
+      setIsPopupSubmitting(false);
+    }
   };
 
   const toggleLang = () => setLang(prev => prev === 'en' ? 'es' : 'en');
@@ -226,56 +273,80 @@ export default function App() {
                   {t.popup.desc}
                 </p>
 
-                {!isPopupSubmitted ? (
+                {!isPopupSubmitted && !popupError ? (
                   <form onSubmit={handlePopupSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder={t.popup.firstName}
-                        className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white"
+                        disabled={isPopupSubmitting}
+                        className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white disabled:opacity-50"
                         value={popupData.firstName}
                         onChange={(e) => setPopupData({...popupData, firstName: e.target.value})}
                       />
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder={t.popup.lastName}
-                        className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white"
+                        disabled={isPopupSubmitting}
+                        className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white disabled:opacity-50"
                         value={popupData.lastName}
                         onChange={(e) => setPopupData({...popupData, lastName: e.target.value})}
                       />
                     </div>
-                    <input 
-                      type="tel" 
+                    <input
+                      type="tel"
                       placeholder={t.popup.whatsapp}
-                      className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white"
+                      disabled={isPopupSubmitting}
+                      className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white disabled:opacity-50"
                       value={popupData.whatsapp}
                       onChange={(e) => setPopupData({...popupData, whatsapp: e.target.value})}
                     />
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       required
                       placeholder={t.popup.email}
-                      className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white"
+                      disabled={isPopupSubmitting}
+                      className="w-full bg-white/5 border-b border-white/10 focus:border-baja-sand px-4 py-3 font-mono text-xs uppercase tracking-widest focus:outline-none transition-all placeholder:text-white/30 text-white disabled:opacity-50"
                       value={popupData.email}
                       onChange={(e) => setPopupData({...popupData, email: e.target.value})}
                     />
-                    
-                    <button 
-                      type="submit" 
+
+                    <button
+                      type="submit"
                       disabled={isPopupSubmitting}
                       className="w-full bg-baja-cream text-black px-8 py-4 font-display text-xl uppercase tracking-wider hover:bg-white disabled:opacity-50 transition-all mt-4 flex justify-center"
                     >
                       {isPopupSubmitting ? t.popup.processing : t.popup.button}
                     </button>
                   </form>
-                ) : (
-                  <motion.div 
+                ) : isPopupSubmitted ? (
+                  <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="py-8 text-center border border-dashed border-baja-sand/30"
                   >
                     <Trophy className="w-8 h-8 text-baja-sand mx-auto mb-4" />
                     <h4 className="font-display text-2xl uppercase text-baja-cream">{t.popup.success}</h4>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="py-8 text-center border border-solid border-red-400/50 bg-red-950/20"
+                  >
+                    <div className="text-2xl mb-4">⚠️</div>
+                    <h4 className="font-display text-lg uppercase text-red-300 mb-3">Error</h4>
+                    <p className="text-sm text-red-200/80 mb-6">{popupError}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPopupError(null);
+                        setPopupData({ firstName: '', lastName: '', whatsapp: '', email: '' });
+                      }}
+                      className="w-full bg-baja-cream text-black px-8 py-3 font-display uppercase tracking-wider hover:bg-white transition-all"
+                    >
+                      Intentar de nuevo
+                    </button>
                   </motion.div>
                 )}
               </div>
@@ -555,8 +626,8 @@ export default function App() {
             </p>
 
             <AnimatePresence mode="wait">
-              {!isContactSubmitted ? (
-                <motion.form 
+              {!isContactSubmitted && !contactError ? (
+                <motion.form
                   key="form"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -567,31 +638,34 @@ export default function App() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                     <div>
                       <label className="block font-mono text-[10px] uppercase tracking-[0.2em] mb-2 opacity-50">{t.contact.firstName}</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         required
-                        className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-mono text-sm uppercase tracking-widest focus:outline-none transition-all text-black"
+                        disabled={isContactSubmitting}
+                        className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-mono text-sm uppercase tracking-widest focus:outline-none transition-all text-black disabled:opacity-50"
                         value={contactData.firstName}
                         onChange={(e) => setContactData({...contactData, firstName: e.target.value})}
                       />
                     </div>
                     <div>
                       <label className="block font-mono text-[10px] uppercase tracking-[0.2em] mb-2 opacity-50">{t.contact.lastName}</label>
-                      <input 
-                        type="text" 
-                        className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-mono text-sm uppercase tracking-widest focus:outline-none transition-all text-black"
+                      <input
+                        type="text"
+                        disabled={isContactSubmitting}
+                        className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-mono text-sm uppercase tracking-widest focus:outline-none transition-all text-black disabled:opacity-50"
                         value={contactData.lastName}
                         onChange={(e) => setContactData({...contactData, lastName: e.target.value})}
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mb-8">
                     <label className="block font-mono text-[10px] uppercase tracking-[0.2em] mb-2 opacity-50">{t.contact.email}</label>
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       required
-                      className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-mono text-sm uppercase tracking-widest focus:outline-none transition-all text-black"
+                      disabled={isContactSubmitting}
+                      className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-mono text-sm uppercase tracking-widest focus:outline-none transition-all text-black disabled:opacity-50"
                       value={contactData.email}
                       onChange={(e) => setContactData({...contactData, email: e.target.value})}
                     />
@@ -599,25 +673,26 @@ export default function App() {
 
                   <div className="mb-12">
                     <label className="block font-mono text-[10px] uppercase tracking-[0.2em] mb-2 opacity-50">{t.contact.message}</label>
-                    <textarea 
+                    <textarea
                       required
+                      disabled={isContactSubmitting}
                       rows={3}
-                      className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-sans text-base focus:outline-none transition-all text-black resize-none"
+                      className="w-full bg-transparent border-b-2 border-black/20 focus:border-black px-0 py-3 font-sans text-base focus:outline-none transition-all text-black resize-none disabled:opacity-50"
                       value={contactData.message}
                       onChange={(e) => setContactData({...contactData, message: e.target.value})}
                     />
                   </div>
 
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={isContactSubmitting}
                     className="w-full md:w-auto bg-black text-white px-12 py-5 font-display text-2xl uppercase tracking-wider hover:bg-zinc-800 disabled:opacity-50 transition-all flex items-center justify-center gap-3 shrink-0 mx-auto"
                   >
                     {isContactSubmitting ? t.contact.processing : t.contact.button}
                   </button>
                 </motion.form>
-              ) : (
-                <motion.div 
+              ) : isContactSubmitted ? (
+                <motion.div
                   key="success"
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -626,6 +701,29 @@ export default function App() {
                   <ShieldCheck className="w-16 h-16 mx-auto mb-6 text-black" />
                   <h3 className="font-display text-4xl uppercase mb-2">{t.contact.successTitle}</h3>
                   <p className="font-mono text-[10px] uppercase tracking-widest opacity-60">{t.contact.successDesc}</p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="error"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="p-12 bg-red-100 inline-block w-full max-w-xl"
+                >
+                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                    <span className="text-3xl">⚠️</span>
+                  </div>
+                  <h3 className="font-display text-3xl uppercase mb-2">Error</h3>
+                  <p className="font-mono text-[10px] uppercase tracking-widest opacity-80 mb-6">{contactError}</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setContactError(null);
+                      setContactData({ firstName: '', lastName: '', email: '', message: '' });
+                    }}
+                    className="w-full bg-black text-white px-8 py-3 font-display text-lg uppercase tracking-wider hover:bg-zinc-800 transition-all"
+                  >
+                    Intentar de nuevo
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
